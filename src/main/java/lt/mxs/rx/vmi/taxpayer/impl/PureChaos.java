@@ -20,6 +20,7 @@ class PureChaos {
         if (prob <= failure) {
             throw new RepositoryException("some random error, prob value: " + prob);
         }
+        prob = random.nextDouble();
         if (prob <= timeout) {
             try {
                 Thread.sleep(TimeUnit.SECONDS.toMillis(random.nextInt(5)));

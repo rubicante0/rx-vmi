@@ -2,6 +2,7 @@ package lt.mxs.rx.vmi.web;
 
 import io.reactivex.Maybe;
 import io.reactivex.Observable;
+import io.reactivex.schedulers.Schedulers;
 import lt.mxs.rx.vmi.taxpayer.ManagedTaxPayers;
 import lt.mxs.rx.vmi.taxpayer.RxTaxPayerService;
 import lt.mxs.rx.vmi.taxpayer.TaxPayer;
@@ -24,13 +25,15 @@ public class RxTaxPayerController {
     public TaxPayerResponse getInformation(@PathVariable("code") String code) {
         Maybe<TaxPayerInformation> main = taxPayerService.findTaxPayer(code)
                 .switchIfEmpty(Maybe.just(new TaxPayer(code, null)))
-                .map(taxPayer -> new TaxPayerInformation(taxPayer.getCode(), taxPayer.getName()));
+                .map(taxPayer -> new TaxPayerInformation(taxPayer.getCode(), taxPayer.getName()))
+                .subscribeOn(Schedulers.io());
 
         Maybe<ManagedTaxPayers> managed = taxPayerService.getManagedTaxPayers(code).toMaybe();
         return main.zipWith(managed, (taxPayer, list) -> {
             return Observable.fromIterable(list.getCodes())
                     .flatMapMaybe(managedCode -> taxPayerService.findTaxPayer(managedCode)
-                            .switchIfEmpty(Maybe.just(new TaxPayer(managedCode, null))))
+                            .switchIfEmpty(Maybe.just(new TaxPayer(managedCode, null)))
+                            .subscribeOn(Schedulers.io()))
                     .map(managedTaxPayer -> new TaxPayerInformation(managedTaxPayer.getCode(), managedTaxPayer.getName()))
                     .toList()
                     .map(converted -> new TaxPayerResponse(taxPayer, converted, list.isAuthoritative()));
