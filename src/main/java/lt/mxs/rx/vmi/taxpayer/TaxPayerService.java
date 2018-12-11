@@ -5,4 +5,6 @@ import java.util.Optional;
 public interface TaxPayerService {
 
     Optional<TaxPayer> findTaxPayer(String code);
+
+    ManagedTaxPayers getManagedTaxPayers(String code);
 }
