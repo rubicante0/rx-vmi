@@ -1,5 +1,6 @@
 package lt.mxs.rx.vmi.taxpayer;
 
+import lt.mxs.rx.vmi.taxpayer.impl.DefaultRxTaxPayerService;
 import lt.mxs.rx.vmi.taxpayer.impl.DefaultTaxPayerService;
 import lt.mxs.rx.vmi.taxpayer.impl.LocalTaxPayerRepository;
 import lt.mxs.rx.vmi.taxpayer.impl.RemoteTaxPayerPermissionRepository;
@@ -28,5 +29,10 @@ public class TaxPayerConfiguration {
     @Bean
     public TaxPayerService taxPayerService() {
         return new DefaultTaxPayerService(localTaxPayerRepository(), remoteTaxPayerRepository(), remoteTaxPayerPermissionRepository());
+    }
+
+    @Bean
+    public RxTaxPayerService rxTaxPayerService() {
+        return new DefaultRxTaxPayerService(localTaxPayerRepository(), remoteTaxPayerRepository(), remoteTaxPayerPermissionRepository());
     }
 }
